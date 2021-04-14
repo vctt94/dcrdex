@@ -110,6 +110,8 @@ type WebServer struct {
 	csp        string
 	srv        *http.Server
 	html       *templates
+	siteDir    string
+	reloadHTML bool
 	indent     bool
 	mtx        sync.RWMutex
 	authTokens map[string]bool
@@ -162,21 +164,6 @@ func New(core clientCore, addr, customSiteDir string, logger dex.Logger, reloadH
 	}
 	log.Infof("Located \"site\" folder at %v", siteDir)
 
-	// Prepare the templates.
-	bb := "bodybuilder"
-	tmpl := newTemplates(filepath.Join(siteDir, "src/html"), reloadHTML).
-		addTemplate("login", bb).
-		addTemplate("register", bb, "forms").
-		addTemplate("markets", bb, "forms").
-		addTemplate("wallets", bb, "forms").
-		addTemplate("settings", bb, "forms").
-		addTemplate("orders", bb).
-		addTemplate("order", bb, "forms")
-	err = tmpl.buildErr()
-	if err != nil {
-		return nil, err
-	}
-
 	// Create an HTTP router.
 	mux := chi.NewRouter()
 	httpServer := &http.Server{
@@ -191,9 +178,14 @@ func New(core clientCore, addr, customSiteDir string, logger dex.Logger, reloadH
 		mux:        mux,
 		srv:        httpServer,
 		addr:       addr,
-		html:       tmpl,
+		siteDir:    siteDir,
+		reloadHTML: reloadHTML,
 		wsServer:   websocket.New(core, log.SubLogger("WS")),
 		authTokens: make(map[string]bool),
+	}
+
+	if err := s.buildTemplates("en"); err != nil {
+		return nil, fmt.Errorf("error loading en localized templates: %v", err)
 	}
 
 	// Middleware
@@ -306,6 +298,20 @@ func New(core clientCore, addr, customSiteDir string, logger dex.Logger, reloadH
 	fileServer(mux, "/font", filepath.Join(siteDir, "src/font"), "")
 
 	return s, nil
+}
+
+func (s *WebServer) buildTemplates(localeID string) error {
+	tmplDir := filepath.Join(s.siteDir, "src", "localized_html", localeID)
+	bb := "bodybuilder"
+	s.html = newTemplates(tmplDir, s.reloadHTML).
+		addTemplate("login", bb).
+		addTemplate("register", bb, "forms").
+		addTemplate("markets", bb, "forms").
+		addTemplate("wallets", bb, "forms").
+		addTemplate("settings", bb, "forms").
+		addTemplate("orders", bb).
+		addTemplate("order", bb, "forms")
+	return s.html.buildErr()
 }
 
 // Connect starts the web server. Satisfies the dex.Connector interface.
