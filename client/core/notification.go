@@ -78,6 +78,10 @@ func (c *Core) AckNotes(ids []dex.Bytes) {
 	}
 }
 
+func (c *Core) formatDetails(subject string, args ...interface{}) (translatedSubject, details string) {
+	return c.localePrinter.Sprintf(subject), c.localePrinter.Sprintf(TemplateKeys[subject], args...)
+}
+
 // Notification is an interface for a user notification. Notification is
 // satisfied by db.Notification, so concrete types can embed the db type.
 type Notification interface {
@@ -168,12 +172,15 @@ type OrderNote struct {
 const (
 	SubjectOrderLoadFailure     = "Order load failure"
 	SubjectOrderPlaced          = "Order placed"
+	SubjectYoloPlaced           = "Market order placed"
 	SubjectMissingMatches       = "Missing matches"
 	SubjectWalletMissing        = "Wallet missing"
-	SubjectMatchStatusError     = "Match status error"
+	SubjectMatchErrorCoin       = "Match coin error"
+	SubjectMatchErrorContract   = "Match contract error"
 	SubjectMatchRecoveryError   = "Match recovery error"
 	SubjectNoFundingCoins       = "No funding coins"
 	SubjectOrderCoinError       = "Order coin error"
+	SubjectOrderCoinFetchError  = "Order coin fetch error"
 	SubjectPreimageSent         = "preimage sent"
 	SubjectCancelPreimageSent   = "cancel preimage sent"
 	SubjectMissedCancel         = "Missed cancel"
@@ -182,7 +189,9 @@ const (
 	SubjectOrderCanceled        = "Order canceled"
 	SubjectCancel               = "cancel"
 	SubjectMatchesMade          = "Matches made"
-	SubjectSwapError            = "Swap error"
+	SubjectSwapSendError        = "Swap send error"
+	SubjectInitError            = "Swap reporting error"
+	SubjectReportRedeemError    = "Redeem reporting error"
 	SubjectSwapsInitiated       = "Swaps initiated"
 	SubjectRedemptionError      = "Redemption error"
 	SubjectMatchComplete        = "Match complete"
@@ -361,10 +370,11 @@ type ServerNotifyNote struct {
 }
 
 const (
-	SubjectMarketSuspendScheduled = "market suspend scheduled"
-	SubjectMarketSuspended        = "market suspended"
-	SubjectMarketResumeScheduled  = "market resume scheduled"
-	SubjectMarketResumed          = "market resumed"
+	SubjectMarketSuspendScheduled   = "Market suspend scheduled"
+	SubjectMarketSuspended          = "Market suspended"
+	SubjectMarketSuspendedWithPurge = "Market suspended, orders purged"
+	SubjectMarketResumeScheduled    = "Market resume scheduled"
+	SubjectMarketResumed            = "Market resumed"
 )
 
 func newServerNotifyNote(subject, details string, severity db.Severity) *ServerNotifyNote {
