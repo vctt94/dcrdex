@@ -1002,6 +1002,8 @@ type Config struct {
 	TorProxy string
 	// TorIsolation specifies whether to enable Tor circuit isolation.
 	TorIsolation bool
+	// Language. A BCP 47 language tag. Default is en-US.
+	Language string
 }
 
 // Core is the core client application. Core manages DEX connections, wallets,
@@ -1059,6 +1061,13 @@ func New(cfg *Config) (*Core, error) {
 			return nil, err
 		}
 	}
+	lang := language.AmericanEnglish
+	if cfg.Language != "" {
+		lang, err = language.Parse(cfg.Language)
+		if err != nil {
+			return nil, fmt.Errorf("Error parsing language tag %q: %v", cfg.Language, err)
+		}
+	}
 
 	core := &Core{
 		cfg:           cfg,
@@ -1079,7 +1088,8 @@ func New(cfg *Config) (*Core, error) {
 		newCrypter:    encrypt.NewCrypter,
 		reCrypter:     encrypt.Deserialize,
 		latencyQ:      wait.NewTickerQueue(recheckInterval),
-		localePrinter: message.NewPrinter(language.AmericanEnglish),
+
+		localePrinter: message.NewPrinter(lang),
 	}
 
 	// Populate the initial user data. User won't include any DEX info yet, as
