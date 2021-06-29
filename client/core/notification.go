@@ -22,6 +22,7 @@ const (
 	NoteTypeWalletConfig = "walletconfig"
 	NoteTypeWalletState  = "walletstate"
 	NoteTypeServerNotify = "notify"
+	NoteTypeUpgrade      = "upgrade"
 )
 
 // notify sends a notification to all subscribers. If the notification is of
@@ -289,6 +290,11 @@ type ConnEventNote struct {
 	Connected bool   `json:"connected"`
 }
 
+const (
+	SubjectDEXConnected    = "Server connected"
+	SubjectDEXDisconnected = "Server disconnect"
+)
+
 func newConnEventNote(subject, host string, connected bool, details string, severity db.Severity) *ConnEventNote {
 	return &ConnEventNote{
 		Notification: db.NewNotification(NoteTypeConnEvent, subject, details, severity),
@@ -375,10 +381,26 @@ const (
 	SubjectMarketSuspendedWithPurge = "Market suspended, orders purged"
 	SubjectMarketResumeScheduled    = "Market resume scheduled"
 	SubjectMarketResumed            = "Market resumed"
+	SubjectPenalized                = "Server has penalized you"
 )
 
 func newServerNotifyNote(subject, details string, severity db.Severity) *ServerNotifyNote {
 	return &ServerNotifyNote{
 		Notification: db.NewNotification(NoteTypeServerNotify, subject, details, severity),
+	}
+}
+
+// UpgradeNote is a notification containing a .
+type UpgradeNote struct {
+	db.Notification
+}
+
+const (
+	SubjectUpgradeNeeded = "Upgrade needed"
+)
+
+func newUpgradeNote(subject, details string, severity db.Severity) *UpgradeNote {
+	return &UpgradeNote{
+		Notification: db.NewNotification(NoteTypeUpgrade, subject, details, severity),
 	}
 }
