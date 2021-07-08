@@ -10,6 +10,7 @@ import OrderPage from './order'
 import { getJSON, postJSON } from './http'
 import * as ntfn from './notifications'
 import ws from './ws'
+import Locales from './locales'
 
 const idel = Doc.idel // = element by id
 const bind = Doc.bind
@@ -88,6 +89,8 @@ export default class Application {
         document.body.removeChild(a)
       }, 0)
     }
+    console.log(Locales)
+    console.log(Locales.getCurrentLocale())
   }
 
   /**

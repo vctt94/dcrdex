@@ -7,6 +7,8 @@ import { postJSON } from './http'
 import { NewWalletForm, bindOpenWallet, bind as bindForm } from './forms'
 import * as Order from './orderutil'
 import ws from './ws'
+import Locales from './locales'
+import { SET_BUTTON_BUY} from "./locales"
 
 let app
 const bind = Doc.bind
@@ -508,7 +510,7 @@ export default class MarketsPage extends BasePage {
   setOrderBttnText () {
     if (this.isSell()) {
       this.page.submitBttn.textContent = `Place order to sell ${this.market.base.symbol.toUpperCase()}`
-    } else this.page.submitBttn.textContent = `Place order to buy  ${this.market.base.symbol.toUpperCase()}`
+    } else this.page.submitBttn.textContent = Locales.formatDetails(SET_BUTTON_BUY, { asset: this.market.base.symbol.toUpperCase() })
   }
 
   /* setMarket sets the currently displayed market. */

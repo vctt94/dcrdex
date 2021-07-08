@@ -1,5 +1,6 @@
 import Doc from './doc'
 import { postJSON } from './http'
+import Locales, { LOGIN_ERROR_MESSAGE } from './locales'
 
 let app
 
@@ -21,7 +22,7 @@ export class NewWalletForm {
 
     bind(form, fields.submitAdd, async () => {
       if (fields.nwAppPass.value === '') {
-        fields.newWalletErr.textContent = 'app password cannot be empty'
+        fields.newWalletErr.textContent = Locales.formatDetails(LOGIN_ERROR_MESSAGE)
         Doc.show(fields.newWalletErr)
         return
       }
