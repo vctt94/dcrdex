@@ -2,6 +2,8 @@ import Doc from './doc'
 import BasePage from './basepage'
 import { postJSON } from './http'
 import * as forms from './forms'
+import Locales from "./locales"
+import { LOGIN_ERROR_MESSAGE } from "./locales";
 
 let app
 
@@ -23,7 +25,7 @@ export default class LoginPage extends BasePage {
     const pw = page.pw.value
     page.pw.value = ''
     if (pw === '') {
-      page.errMsg.textContent = 'password cannot be empty'
+      page.errMsg.textContent = Locales.formatDetails(LOGIN_ERROR_MESSAGE)
       Doc.show(page.errMsg)
       return
     }
