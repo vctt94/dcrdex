@@ -102,6 +102,7 @@ type User struct {
 	Exchanges   map[string]*Exchange       `json:"exchanges"`
 	Initialized bool                       `json:"inited"`
 	Assets      map[uint32]*SupportedAsset `json:"assets"`
+	Locale      string                     `json:"locale"`
 }
 
 // SupportedAsset is data about an asset and possibly the wallet associated

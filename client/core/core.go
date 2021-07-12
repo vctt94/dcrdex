@@ -1550,6 +1550,7 @@ func (c *Core) User() *User {
 		Assets:      c.assetMap(),
 		Exchanges:   c.exchangeMap(),
 		Initialized: initialized,
+		Locale:      "default",
 	}
 }
 
