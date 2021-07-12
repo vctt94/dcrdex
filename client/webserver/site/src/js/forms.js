@@ -1,6 +1,11 @@
 import Doc from './doc'
 import { postJSON } from './http'
-import Locales, { LOGIN_ERROR_MESSAGE } from './locales'
+import Locales, {
+  ID_HIDE_ADDIIONAL_SETTINGS,
+  ID_NO_APP_PASS_ERROR_MSG,
+  ID_NO_PASS_ERROR_MSG,
+  ID_SHOW_ADDIIONAL_SETTINGS
+} from './locales'
 
 let app
 
@@ -22,7 +27,7 @@ export class NewWalletForm {
 
     bind(form, fields.submitAdd, async () => {
       if (fields.nwAppPass.value === '') {
-        fields.newWalletErr.textContent = Locales.formatDetails(LOGIN_ERROR_MESSAGE)
+        fields.newWalletErr.textContent = Locales.formatDetails(ID_NO_PASS_ERROR_MSG)
         Doc.show(fields.newWalletErr)
         return
       }
@@ -205,12 +210,12 @@ export class WalletConfigForm {
     if (visible) {
       Doc.hide(this.showIcon)
       Doc.show(this.hideIcon, this.otherSettings)
-      this.showHideMsg.textContent = 'hide additional settings'
+      this.showHideMsg.textContent = Locales.formatDetails(ID_SHOW_ADDIIONAL_SETTINGS)
       return
     }
     Doc.hide(this.hideIcon, this.otherSettings)
     Doc.show(this.showIcon)
-    this.showHideMsg.textContent = 'show additional settings'
+    this.showHideMsg.textContent = Locales.formatDetails(ID_HIDE_ADDIIONAL_SETTINGS)
   }
 
   /*
@@ -292,7 +297,7 @@ export function bindOpenWallet (app, form, success) {
   }
   bind(form, fields.submitUnlock, async () => {
     if (fields.uwAppPass.value === '') {
-      fields.unlockErr.textContent = 'app password cannot be empty'
+      fields.unlockErr.textContent = Locales.formatDetails(ID_NO_APP_PASS_ERROR_MSG)
       Doc.show(fields.unlockErr)
       return
     }

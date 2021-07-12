@@ -7,8 +7,23 @@ import { postJSON } from './http'
 import { NewWalletForm, bindOpenWallet, bind as bindForm } from './forms'
 import * as Order from './orderutil'
 import ws from './ws'
-import Locales from './locales'
-import { SET_BUTTON_BUY} from "./locales"
+import Locales, {
+  ID_BOOKED,
+  ID_BUY,
+  ID_EXECUTED,
+  ID_ORDER_PREVIEW,
+  ID_SELL,
+  ID_TRADE,
+  ID_SET_BUTTON_BUY,
+  ID_NOT_SUPPORTED,
+  ID_SET_BUTTON_SELL,
+  ID_CONNECTION_FAILED,
+  ID_CALCULATING,
+  ID_ESTIMATE_UNAVAILABLE,
+  ID_NO_ZERO_RATE,
+  ID_NO_ZERO_QUANTITY,
+  ID_NO_ASSET_WALLET
+} from './locales'
 
 let app
 const bind = Doc.bind
@@ -142,7 +157,7 @@ export default class MarketsPage extends BasePage {
       swapBttns(page.sellBttn, page.buyBttn)
       page.submitBttn.classList.remove('sellred')
       page.submitBttn.classList.add('buygreen')
-      page.maxLbl.textContent = 'Buy'
+      page.maxLbl.textContent = Locales.formatDetails(ID_BUY)
       this.setOrderBttnText()
       this.setOrderVisibility()
       this.drawChartLines()
@@ -151,7 +166,7 @@ export default class MarketsPage extends BasePage {
       swapBttns(page.buyBttn, page.sellBttn)
       page.submitBttn.classList.add('sellred')
       page.submitBttn.classList.remove('buygreen')
-      page.maxLbl.textContent = 'Sell'
+      page.maxLbl.textContent = Locales.formatDetails(ID_SELL)
       this.setOrderBttnText()
       this.setOrderVisibility()
       this.drawChartLines()
@@ -440,7 +455,7 @@ export default class MarketsPage extends BasePage {
     }
     const symbol = (!base && this.market.baseCfg.symbol) || (!quote && this.market.quoteCfg.symbol)
 
-    page.loaderMsg.textContent = `${symbol.toUpperCase()} is not supported`
+    page.loaderMsg.textContent = Locales.formatDetails(ID_NOT_SUPPORTED, { asset: symbol.toUpperCase() })
     Doc.show(page.loaderMsg)
   }
 
@@ -509,8 +524,8 @@ export default class MarketsPage extends BasePage {
 
   setOrderBttnText () {
     if (this.isSell()) {
-      this.page.submitBttn.textContent = `Place order to sell ${this.market.base.symbol.toUpperCase()}`
-    } else this.page.submitBttn.textContent = Locales.formatDetails(SET_BUTTON_BUY, { asset: this.market.base.symbol.toUpperCase() })
+      this.page.submitBttn.textContent = Locales.formatDetails(ID_SET_BUTTON_SELL, { asset: this.market.base.symbol.toUpperCase() })
+    } else this.page.submitBttn.textContent = Locales.formatDetails(ID_SET_BUTTON_BUY, { asset: this.market.base.symbol.toUpperCase() })
   }
 
   /* setMarket sets the currently displayed market. */
@@ -522,8 +537,7 @@ export default class MarketsPage extends BasePage {
     // established, at which time handleConnNote will refresh and reload.
     if (!dex.connected) {
       this.market = { dex: dex }
-      page.chartErrMsg.textContent = 'Connection to dex server failed. ' +
-        'You can close dexc and try again later or wait for it to reconnect.'
+      page.chartErrMsg.textContent = Locales.formatDetails(ID_CONNECTION_FAILED)
       Doc.show(page.chartErrMsg)
       this.loaded()
       this.main.style.opacity = 1
@@ -676,7 +690,7 @@ export default class MarketsPage extends BasePage {
     }
     const quoteAsset = app.assets[order.quote]
     const total = Doc.formatCoinValue(order.rate / 1e8 * order.qty / 1e8)
-    page.orderPreview.textContent = `Total: ${total} ${quoteAsset.symbol.toUpperCase()}`
+    page.orderPreview.textContent = Locales.formatDetails(ID_ORDER_PREVIEW, { total, asset: quoteAsset.symbol.toUpperCase() })
   }
 
   /**
@@ -742,7 +756,7 @@ export default class MarketsPage extends BasePage {
 
     Doc.show(page.maxOrd, page.maxLotBox)
     Doc.hide(page.maxAboveZero)
-    page.maxFromLots.textContent = 'calculating...'
+    page.maxFromLots.textContent = Locales.formatDetails(ID_CALCULATING)
     page.maxFromLotsLbl.textContent = ''
     this.preorderTimer = window.setTimeout(async () => {
       this.preorderTimer = null
@@ -760,7 +774,7 @@ export default class MarketsPage extends BasePage {
 
       if (!app.checkResponse(res, true)) {
         console.warn('max order estimate not available:', res)
-        page.maxFromLots.textContent = 'estimate unavailable'
+        page.maxFromLots.textContent = Locales.formatDetails(ID_ESTIMATE_UNAVAILABLE)
         return
       }
       success(res)
@@ -773,6 +787,7 @@ export default class MarketsPage extends BasePage {
     Doc.show(page.maxOrd, page.maxLotBox, page.maxAboveZero)
     const sell = this.isSell()
     page.maxFromLots.textContent = maxOrder.lots.toString()
+    // XXX add plural into format details, so we don't need this
     page.maxFromLotsLbl.textContent = maxOrder.lots === 1 ? 'lot' : 'lots'
     if (maxOrder.lots === 0) {
       Doc.hide(page.maxAboveZero)
@@ -795,12 +810,12 @@ export default class MarketsPage extends BasePage {
     const page = this.page
     if (order.isLimit && !order.rate) {
       Doc.show(page.orderErr)
-      page.orderErr.textContent = 'zero rate not allowed'
+      page.orderErr.textContent = Locales.formatDetails(ID_NO_ZERO_RATE)
       return false
     }
     if (!order.qty) {
       Doc.show(page.orderErr)
-      page.orderErr.textContent = 'zero quantity not allowed'
+      page.orderErr.textContent = Locales.formatDetails(ID_NO_ZERO_QUANTITY)
       return false
     }
     return true
@@ -1077,7 +1092,7 @@ export default class MarketsPage extends BasePage {
     const fromAsset = isSell ? baseAsset : quoteAsset
 
     page.vQty.textContent = Doc.formatCoinValue(order.qty / 1e8)
-    page.vSideHeader.textContent = isSell ? 'Sell' : 'Buy'
+    page.vSideHeader.textContent = isSell ? Locales.formatDetails(ID_SELL) : Locales.formatDetails(ID_BUY)
     page.vSideSubmit.textContent = page.vSideHeader.textContent
     page.vBaseSubmit.textContent = baseAsset.symbol.toUpperCase()
     if (order.isLimit) {
@@ -1087,11 +1102,11 @@ export default class MarketsPage extends BasePage {
       page.vQuote.textContent = quoteAsset.symbol.toUpperCase()
       page.vTotal.textContent = Doc.formatCoinValue(order.rate / 1e8 * order.qty / 1e8)
       page.vBase.textContent = baseAsset.symbol.toUpperCase()
-      page.vSide.textContent = isSell ? 'sell' : 'buy'
+      page.vSide.textContent = isSell ? Locales.formatDetails(ID_SELL).toLowerCase() : Locales.formatDetails(ID_BUY).toLowerCase()
     } else {
       Doc.hide(page.verifyLimit)
       Doc.show(page.verifyMarket)
-      page.vSide.textContent = 'trade'
+      page.vSide.textContent = Locales.formatDetails(ID_TRADE)
       page.vBase.textContent = fromAsset.symbol.toUpperCase()
       const gap = this.midGap()
       if (gap) {
@@ -1180,12 +1195,12 @@ export default class MarketsPage extends BasePage {
     const baseWallet = app.walletMap[market.base.id]
     const quoteWallet = app.walletMap[market.quote.id]
     if (!baseWallet) {
-      page.orderErr.textContent = `No ${market.base.symbol} wallet`
+      page.orderErr.textContent = Locales.formatDetails(ID_NO_ASSET_WALLET, { asset: market.base.symbol })
       Doc.show(page.orderErr)
       return
     }
     if (!quoteWallet) {
-      page.orderErr.textContent = `No ${market.quote.symbol} wallet`
+      page.orderErr.textContent = Locales.formatDetails(ID_NO_ASSET_WALLET, { asset: market.quote.symbol })
       Doc.show(page.orderErr)
       return
     }
@@ -1256,12 +1271,12 @@ export default class MarketsPage extends BasePage {
       const statusTD = Doc.tmplElement(metaOrder.row, 'status')
       switch (true) {
         case order.type === Order.Limit && order.status === Order.StatusEpoch && alreadyMatched:
-          statusTD.textContent = order.tif === Order.ImmediateTiF ? 'executed' : 'booked'
+          statusTD.textContent = order.tif === Order.ImmediateTiF ? Locales.formatDetails(ID_EXECUTED) : Locales.formatDetails(ID_BOOKED)
           order.status = order.tif === Order.ImmediateTiF ? Order.StatusExecuted : Order.StatusBooked
           break
         case order.type === Order.Market && order.status === Order.StatusEpoch:
           // Technically don't know if this should be 'executed' or 'settling'.
-          statusTD.textContent = 'executed'
+          statusTD.textContent = Locales.formatDetails(ID_EXECUTED)
           order.status = Order.StatusExecuted
           break
       }

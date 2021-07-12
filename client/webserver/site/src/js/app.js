@@ -155,6 +155,7 @@ export default class Application {
     this.assets = user.assets
     this.exchanges = user.exchanges
     this.walletMap = {}
+    this.locale = user.locale
     for (const [assetID, asset] of Object.entries(user.assets)) {
       if (asset.wallet) {
         this.walletMap[assetID] = asset.wallet

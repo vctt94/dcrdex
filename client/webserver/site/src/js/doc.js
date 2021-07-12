@@ -1,3 +1,12 @@
+
+import Locales, {
+  ID_OFF,
+  ID_LOCKED,
+  ID_READY,
+  ID_NOWALLET,
+  ID_WALLET_SYNC_PROGRESS
+} from './locales'
+
 const parser = new window.DOMParser()
 
 const FPS = 30
@@ -248,7 +257,7 @@ export class WalletIcons {
     const i = this.icons
     Doc.hide(i.locked, i.unlocked, i.nowallet, i.syncing)
     Doc.show(i.sleeping)
-    if (this.status) this.status.textContent = 'off'
+    if (this.status) this.status.textContent = Locales.formatDetails(ID_OFF)
   }
 
   /*
@@ -258,7 +267,7 @@ export class WalletIcons {
     const i = this.icons
     Doc.hide(i.unlocked, i.nowallet, i.sleeping)
     Doc.show(i.locked)
-    if (this.status) this.status.textContent = 'locked'
+    if (this.status) this.status.textContent = Locales.formatDetails(ID_LOCKED)
   }
 
   /*
@@ -269,7 +278,7 @@ export class WalletIcons {
     const i = this.icons
     Doc.hide(i.locked, i.nowallet, i.sleeping)
     Doc.show(i.unlocked)
-    if (this.status) this.status.textContent = 'ready'
+    if (this.status) this.status.textContent = Locales.formatDetails(ID_READY)
   }
 
   /* sleeping sets the icons to indicate that no wallet exists. */
@@ -277,7 +286,7 @@ export class WalletIcons {
     const i = this.icons
     Doc.hide(i.locked, i.unlocked, i.sleeping, i.syncing)
     Doc.show(i.nowallet)
-    if (this.status) this.status.textContent = 'no wallet'
+    if (this.status) this.status.textContent = Locales.formatDetails(ID_NOWALLET)
   }
 
   setSyncing (wallet) {
@@ -288,7 +297,7 @@ export class WalletIcons {
     }
     if (!wallet.synced) {
       Doc.show(icon)
-      icon.dataset.tooltip = `wallet is ${(wallet.syncProgress * 100).toFixed(1)}% synced`
+      icon.dataset.tooltip = Locales.formatDetails(ID_WALLET_SYNC_PROGRESS, { syncProgress: (wallet.syncProgress * 100).toFixed(1) })
     } else Doc.hide(icon)
   }
 
