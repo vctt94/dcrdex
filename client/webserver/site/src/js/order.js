@@ -3,6 +3,7 @@ import BasePage from './basepage'
 import * as Order from './orderutil'
 import { bind as bindForm } from './forms'
 import { postJSON } from './http'
+import Locales, { ID_CANCELING } from './locales'
 
 const Mainnet = 0
 const Testnet = 1
@@ -117,7 +118,7 @@ export default class OrderPage extends BasePage {
     const res = await postJSON('/api/cancel', req)
     loaded()
     if (!app.checkResponse(res)) return
-    page.status.textContent = 'cancelling'
+    page.status.textContent = Locales.formatDetails(ID_CANCELING)
     Doc.hide(page.forms)
     order.cancelling = true
   }
