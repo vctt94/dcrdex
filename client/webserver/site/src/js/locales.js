@@ -22,10 +22,18 @@ export const ID_TRADE = 'ID_TRADE'
 export const ID_NO_ASSET_WALLET = 'ID_NO_ASSET_WALLET'
 export const ID_EXECUTED = 'ID_EXECUTED'
 export const ID_BOOKED = 'ID_BOOKED'
+export const ID_CANCELING = 'ID_CANCELING'
+export const ID_PASSWORD_NOT_MATCH = 'ID_PASSWORD_NOT_MATCH'
+export const ID_DEX_ADDRESS_EMPTY = 'ID_DEX_ADDRESS_EMPTY'
+export const ID_ACCT_UNDEFINED = 'ID_ACCT_UNDEFINED'
+export const ID_URL_EMPTY = 'ID_URL_EMPTY'
+export const ID_KEEP_WALLET_PASS = 'ID_KEEP_WALLET_PASS'
+export const ID_NEW_WALLET_PASS = 'ID_NEW_WALLET_PASS'
 
 export const templateKeys = {
   [ID_NO_PASS_ERROR_MSG]: 'password cannot be empty',
   [ID_NO_APP_PASS_ERROR_MSG]: 'app password cannot be empty',
+  [ID_PASSWORD_NOT_MATCH]: 'passwords do not match',
   [ID_SET_BUTTON_BUY]: 'Place order to buy  {{ asset }}',
   [ID_SET_BUTTON_SELL]: 'Place order to sell {{ asset }}',
   [ID_OFF]: 'off',
@@ -47,7 +55,14 @@ export const templateKeys = {
   [ID_TRADE]: 'trade',
   [ID_NO_ASSET_WALLET]: 'No {{ asset }} wallet',
   [ID_EXECUTED]: 'executed',
-  [ID_BOOKED]: 'booked'
+  [ID_BOOKED]: 'booked',
+  [ID_CANCELING]: 'cancelling',
+  [ID_DEX_ADDRESS_EMPTY]: 'DEX address cannot be empty',
+  [ID_ACCT_UNDEFINED]: 'Account undefined.',
+  [ID_URL_EMPTY]: 'URL cannot be empty',
+  [ID_KEEP_WALLET_PASS]: 'keep current wallet password',
+  [ID_NEW_WALLET_PASS]: 'set a new wallet password'
+
 }
 
 export default class Locales {
