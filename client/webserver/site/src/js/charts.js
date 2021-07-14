@@ -584,7 +584,7 @@ class Extents {
   }
 
   get xRange () {
-    return this.x.max - this.x.min
+    return Math.abs(this.x.max - this.x.min)
   }
 
   get midX () {
